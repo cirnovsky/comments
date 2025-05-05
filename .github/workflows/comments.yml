@@ -44,6 +44,6 @@ jobs:
                 }
               }
             `, {
-              discussionId: "test", // not the number!
+              discussionId: "D_kwDOOj6ozM4AflMj", // not the number!
               body: comment
             });
