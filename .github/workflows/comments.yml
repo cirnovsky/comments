@@ -1,0 +1,49 @@
+name: Post Comment to GitHub Discussion
+
+on:
+  repository_dispatch:
+    types: [submit-comment]
+
+# jobs:
+#   post:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Post comment
+#         uses: actions/github-script@v7
+#         with:
+#           github-token: ${{ secrets.BOT_TOKEN }}
+#           script: |
+#             const { comment, discussion_number } = context.payload.client_payload;
+
+#             await github.rest.discussions.createComment({
+#               owner: context.repo.owner,
+#               repo: context.repo.repo,
+#               discussion_number: discussion_number,
+#               body: comment
+#             });
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post comment via GitHub API
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.BOT_TOKEN }}
+          script: |
+            const { discussion_number, comment } = context.payload.client_payload;
+
+            await github.graphql(`
+              mutation($discussionId: ID!, $body: String!) {
+                addDiscussionComment(input: {
+                  discussionId: $discussionId,
+                  body: $body
+                }) {
+                  comment {
+                    id
+                  }
+                }
+              }
+            `, {
+              discussionId: "test", // not the number!
+              body: comment
+            });
